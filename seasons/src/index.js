@@ -1,39 +1,44 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
- 
+import SeasonDisplay from './SeasonDisplay';
+import Spinner from './Spinner';
 
 class App extends React.Component {
 
-	constructor(props) {
-		super(props);
-		//THIS is the ONLY TIME that we do a direct 
-		//Assigment to this.state inside a Constructor. 
-		this.state = { lat: null, errorMessage: '' };
+	
+	state = { lat: null, errorMessage: '' };	
 
+
+	componentDidMount(){
+		//in the componentDidMount is the best place to use to upload data.
 		window.navigator.geolocation.getCurrentPosition(
-		position => {
-			//Calling setState.
-			this.setState({ lat: position.coords.latitude});
-		},
-		err => {
-			this.setState({ errorMessage: err.message});
-			}
-
+		position => this.setState({ lat: position.coords.latitude}),
+		err => this.setState({ errorMessage: err.message})
 	 	);
-	};
+	}
 
-	//react says we need to define render
-	render(){
+	renderContent(){
+		//Render is should only be used to render JSX
 		if (this.state.errorMessage && !this.state.lat) {
 			return <div>{this.state.errorMessage}</div>
 		}
 
 		if(!this.state.errorMessage && this.state.lat){
-			return <div>{this.state.lat}</div>
+			return <SeasonDisplay lat={this.state.lat} />;
 		}
 
-		return <div>Loading!....</div>
+		return <Spinner message="please accept location request" />
+
+
+	};
+	//react says we need to define render
+	render(){
+		//conditionals in renders
+		return (
+			<div className="border red">
+				{this.renderContent()}
+			</div>
+		);
 	}
 };
 
